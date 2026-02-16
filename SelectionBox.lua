@@ -1,4 +1,4 @@
---// SelectionBox 1.0
+--// Notification 1.0
 
 local RunService = game:GetService("RunService")
 local Camera = workspace.CurrentCamera
@@ -18,13 +18,16 @@ local function newBox(part, color)
 		lines[i] = l
 	end
 
-	local pulse = 0
-
 	local box = {
 		part = part,
 		lines = lines,
-		pulse = pulse
+		pulse = 0,
+		baseTransparency = 0.6 -- default base transparency
 	}
+
+	function box:setTransparency(value)
+		self.baseTransparency = math.clamp(value,0,1)
+	end
 
 	function box:update(dt)
 		if not self.part or not self.part.Parent then
@@ -34,10 +37,12 @@ local function newBox(part, color)
 
 		self.pulse += dt * 2
 		local wave = (math.sin(self.pulse) + 1) / 2
+		local trans = self.baseTransparency + wave * 0.4
+		trans = math.clamp(trans, 0, 1)
 
 		for _,l in ipairs(self.lines) do
-			l.Transparency = 0.6 + (wave * 0.4)
-			l.Thickness = 2 + (wave * 0.8)
+			l.Transparency = trans
+			l.Thickness = 2 + wave * 0.8
 		end
 
 		local cf = self.part.CFrame
