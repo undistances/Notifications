@@ -63,12 +63,6 @@ return function(title, description, duration)
 
 	local baseY = viewport.Y - 120 - (#Active * 75)
 
-	local shadow = Drawing.new("Square")
-	shadow.Size = Vector2.new(width + 6, height + 6)
-	shadow.Color = Color3.fromRGB(0,0,0)
-	shadow.Filled = true
-	shadow.Transparency = 0.6
-
 	local panel = Drawing.new("Square")
 	panel.Size = Vector2.new(width, height)
 	panel.Color = Color3.fromRGB(22,22,28)
