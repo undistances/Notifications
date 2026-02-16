@@ -1,4 +1,4 @@
---// Notifications
+--// Notifications 2.0
 
 local RunService = game:GetService("RunService")
 local Camera = workspace.CurrentCamera
