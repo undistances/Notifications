@@ -44,24 +44,22 @@ end)
 
 return function(title, description, duration)
 	duration = duration or 3
-	local paddingX, paddingY = 16, 16
-	local width = 320
-	local height = 80
-	local viewport = Camera.ViewportSize
-	local startX = viewport.X + 50
-	local endX = viewport.X - width - 50
-	local exitX = viewport.X + width + 100
-	local baseY = viewport.Y - 140 - (#Active * (height + 16))
+	local width, height = 320, 80
+	local startX = Camera.ViewportSize.X + 50
+	local endX = Camera.ViewportSize.X - width - 50
+	local exitX = Camera.ViewportSize.X + width + 100
+	local baseY = Camera.ViewportSize.Y - 140 - (#Active * (height + 16))
 
+	-- outline
 	local outline = Drawing.new("Square")
 	outline.Size = Vector2.new(width + 2, height + 2)
-	outline.Position = Vector2.new(0,0)
-	outline.Color = Color3.new(1,1,1)
 	outline.Filled = false
+	outline.Color = Color3.new(1,1,1)
 	outline.Thickness = 2
 	outline.Transparency = 1
 	outline.Visible = true
 
+	-- panel
 	local panel = Drawing.new("Square")
 	panel.Size = Vector2.new(width, height)
 	panel.Color = Color3.fromRGB(25,25,35)
@@ -69,30 +67,25 @@ return function(title, description, duration)
 	panel.Transparency = 1
 	panel.Visible = true
 
-	local accent = Drawing.new("Square")
-	accent.Size = Vector2.new(6, height)
-	accent.Color = Color3.fromHSV(math.random(),1,1)
-	accent.Filled = true
-	accent.Transparency = 1
-	accent.Visible = true
-
+	-- title
 	local titleText = Drawing.new("Text")
 	titleText.Size = 22
 	titleText.Font = 2
 	titleText.Color = Color3.fromRGB(255,255,255)
 	titleText.Text = title
-	titleText.Transparency = 1 
-	titleText.Center = false
+	titleText.Transparency = 1
 	titleText.Visible = true
+	titleText.Center = false
 
+	-- description
 	local descText = Drawing.new("Text")
 	descText.Size = 16
 	descText.Font = 2
 	descText.Color = Color3.fromRGB(200,200,210)
 	descText.Text = description
-	descText.Transparency = 1 
-	descText.Center = false
+	descText.Transparency = 1
 	descText.Visible = true
+	descText.Center = false
 
 	local notif = {
 		state = "enter",
@@ -105,34 +98,29 @@ return function(title, description, duration)
 		height = height,
 		panel = panel,
 		outline = outline,
-		accent = accent,
 		titleText = titleText,
-		descText = descText,
-		paddingX = paddingX,
-		paddingY = paddingY
+		descText = descText
 	}
 
 	function notif:setPosition(x,y)
 		outline.Position = Vector2.new(x - 1, y - 1)
 		panel.Position = Vector2.new(x, y)
-		titleText.Position = Vector2.new(x + paddingX, y + paddingY)
-		descText.Position = Vector2.new(x + paddingX, y + paddingY + 32)
+		titleText.Position = Vector2.new(x + 16, y + 16)
+		descText.Position = Vector2.new(x + 16, y + 48)
 	end
 
 	function notif:setAlpha(a)
 		panel.Transparency = a
 		titleText.Transparency = a
 		descText.Transparency = a
-		accent.Transparency = a
 		outline.Transparency = a
 	end
 
 	function notif:destroy()
 		panel:Remove()
-		accent:Remove()
+		outline:Remove()
 		titleText:Remove()
 		descText:Remove()
-		outline:Remove()
 		for i,v in ipairs(Active) do
 			if v == self then
 				table.remove(Active,i)
@@ -146,7 +134,7 @@ return function(title, description, duration)
 	table.insert(Active, notif)
 	recalcPositions()
 
-	task.delay(duration,function()
+	task.delay(duration, function()
 		notif.state = "exit"
 		notif.progress = 0
 	end)
