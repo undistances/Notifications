@@ -1,5 +1,3 @@
--- | saviour
-
 local RunService = game:GetService("RunService")
 local Camera = workspace.CurrentCamera
 
@@ -38,16 +36,8 @@ RunService.RenderStepped:Connect(function(dt)
 				notif:destroy()
 			end
 		elseif notif.state == "idle" then
-			notif.sweepPos += dt * 300
-			if notif.sweepPos > notif.width then
-				notif.sweepPos = 0
-			end
-			notif:updateParticles(dt)
-			notif.accent.Position = Vector2.new(notif.panel.Position.X + notif.sweepPos, notif.panel.Position.Y)
-			local floatOffset = math.sin(tick()*2) * 2
-			notif.panel.Position = Vector2.new(notif.panel.Position.X, notif.targetY + floatOffset)
-			notif.titleText.Position = Vector2.new(notif.panel.Position.X + notif.paddingX, notif.panel.Position.Y + notif.paddingY + floatOffset)
-			notif.descText.Position = Vector2.new(notif.panel.Position.X + notif.paddingX, notif.panel.Position.Y + notif.paddingY + 32 + floatOffset)
+			notif:setPosition(notif.panel.Position.X, notif.targetY)
+			notif:setAlpha(1)
 		end
 	end
 end)
@@ -63,12 +53,28 @@ return function(title, description, duration)
 	local exitX = viewport.X + width + 100
 	local baseY = viewport.Y - 140 - (#Active * (height + 16))
 
+	local outline = Drawing.new("Square")
+	outline.Size = Vector2.new(width + 2, height + 2) -- slightly bigger
+	outline.Position = Vector2.new(0,0)
+	outline.Color = Color3.new(1,1,1) -- white
+	outline.Filled = false
+	outline.Thickness = 2
+	outline.Transparency = 1
+	outline.Visible = true
+
 	local panel = Drawing.new("Square")
 	panel.Size = Vector2.new(width, height)
 	panel.Color = Color3.fromRGB(25,25,35)
 	panel.Filled = true
 	panel.Transparency = 1
 	panel.Visible = true
+
+	local accent = Drawing.new("Square")
+	accent.Size = Vector2.new(6, height)
+	accent.Color = Color3.fromHSV(math.random(),1,1)
+	accent.Filled = true
+	accent.Transparency = 1
+	accent.Visible = true
 
 	local titleText = Drawing.new("Text")
 	titleText.Size = 22
@@ -88,17 +94,6 @@ return function(title, description, duration)
 	descText.Center = false
 	descText.Visible = true
 
-	local particles = {}
-	for i=1,8 do
-		local p = Drawing.new("Square")
-		p.Size = Vector2.new(4,4)
-		p.Color = Color3.fromHSV(math.random(),1,1)
-		p.Filled = true
-		p.Transparency = 0.8
-		p.Visible = true
-		table.insert(particles,p)
-	end
-
 	local notif = {
 		state = "enter",
 		progress = 0,
@@ -109,17 +104,17 @@ return function(title, description, duration)
 		width = width,
 		height = height,
 		panel = panel,
+		outline = outline,
 		accent = accent,
 		titleText = titleText,
 		descText = descText,
-		particles = particles,
-		sweepPos = 0,
 		paddingX = paddingX,
 		paddingY = paddingY
 	}
 
 	function notif:setPosition(x,y)
-		panel.Position = Vector2.new(x,y)
+		outline.Position = Vector2.new(x - 1, y - 1) -- offset for outline
+		panel.Position = Vector2.new(x, y)
 	end
 
 	function notif:setAlpha(a)
@@ -127,17 +122,7 @@ return function(title, description, duration)
 		titleText.Transparency = a
 		descText.Transparency = a
 		accent.Transparency = a
-		for _,p in ipairs(particles) do
-			p.Transparency = 0.3 + a*0.5
-		end
-	end
-
-	function notif:updateParticles(dt)
-		for _,p in ipairs(self.particles) do
-			local offsetX = math.random()*self.width - self.width/2
-			local offsetY = math.random()*self.height - self.height/2
-			p.Position = Vector2.new(self.panel.Position.X + offsetX, self.panel.Position.Y + offsetY)
-		end
+		outline.Transparency = a
 	end
 
 	function notif:destroy()
@@ -145,9 +130,7 @@ return function(title, description, duration)
 		accent:Remove()
 		titleText:Remove()
 		descText:Remove()
-		for _,p in ipairs(particles) do
-			p:Remove()
-		end
+		outline:Remove()
 		for i,v in ipairs(Active) do
 			if v == self then
 				table.remove(Active,i)
