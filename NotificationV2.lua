@@ -70,13 +70,6 @@ return function(title, description, duration)
 	panel.Transparency = 1
 	panel.Visible = true
 
-	local accent = Drawing.new("Square")
-	accent.Size = Vector2.new(6, height)
-	accent.Color = Color3.fromHSV(math.random(),1,1)
-	accent.Filled = true
-	accent.Transparency = 1
-	accent.Visible = true
-
 	local titleText = Drawing.new("Text")
 	titleText.Size = 22
 	titleText.Font = 2
