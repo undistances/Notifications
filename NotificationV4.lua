@@ -54,9 +54,9 @@ return function(title, description, duration)
 	local baseY = viewport.Y - 140 - (#Active * (height + 16))
 
 	local outline = Drawing.new("Square")
-	outline.Size = Vector2.new(width + 2, height + 2) -- slightly bigger
+	outline.Size = Vector2.new(width + 2, height + 2)
 	outline.Position = Vector2.new(0,0)
-	outline.Color = Color3.new(1,1,1) -- white
+	outline.Color = Color3.new(1,1,1)
 	outline.Filled = false
 	outline.Thickness = 2
 	outline.Transparency = 1
@@ -81,7 +81,7 @@ return function(title, description, duration)
 	titleText.Font = 2
 	titleText.Color = Color3.fromRGB(255,255,255)
 	titleText.Text = title
-	titleText.Transparency = 0
+	titleText.Transparency = 1 
 	titleText.Center = false
 	titleText.Visible = true
 
@@ -90,7 +90,7 @@ return function(title, description, duration)
 	descText.Font = 2
 	descText.Color = Color3.fromRGB(200,200,210)
 	descText.Text = description
-	descText.Transparency = 0
+	descText.Transparency = 1 
 	descText.Center = false
 	descText.Visible = true
 
@@ -113,8 +113,10 @@ return function(title, description, duration)
 	}
 
 	function notif:setPosition(x,y)
-		outline.Position = Vector2.new(x - 1, y - 1) -- offset for outline
+		outline.Position = Vector2.new(x - 1, y - 1)
 		panel.Position = Vector2.new(x, y)
+		titleText.Position = Vector2.new(x + paddingX, y + paddingY)
+		descText.Position = Vector2.new(x + paddingX, y + paddingY + 32)
 	end
 
 	function notif:setAlpha(a)
